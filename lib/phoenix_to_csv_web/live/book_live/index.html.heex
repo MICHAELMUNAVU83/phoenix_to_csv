@@ -1,0 +1,48 @@
+<h1>Listing Book</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <.modal return_to={Routes.book_index_path(@socket, :index)}>
+    <.live_component
+      module={PhoenixToCsvWeb.BookLive.FormComponent}
+      id={@book.id || :new}
+      title={@page_title}
+      action={@live_action}
+      book={@book}
+      return_to={Routes.book_index_path(@socket, :index)}
+    />
+  </.modal>
+<% end %>
+<div class="flex justify-end mb-2">
+  <%= link to: Routes.export_path(@socket, :create), class: "btn btn-secondary", method: :post do %>
+    Export
+   
+  <% end %>
+</div>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Title</th>
+      <th>Desc</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="book">
+    <%= for book <- @book_collection do %>
+      <tr id={"book-#{book.id}"}>
+        <td><%= book.name %></td>
+        <td><%= book.title %></td>
+        <td><%= book.desc %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.book_show_path(@socket, :show, book) %></span>
+          <span><%= live_patch "Edit", to: Routes.book_index_path(@socket, :edit, book) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: book.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Book", to: Routes.book_index_path(@socket, :new) %></span>
